@@ -1,0 +1,13 @@
+body {
+  background: #E4E4E4;
+  font-family: 'Fenix', serif;
+  size: 13px;
+  color: #404040;
+}
+
+#main {
+  width: 75%;
+  margin: 20% auto;
+  text-align: center;
+  font-size: 3em;
+}

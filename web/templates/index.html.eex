@@ -1,0 +1,11 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Elixir de sabiduría</title>
+  <link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>
+  <link href="/static/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+  <div id="main"><%= @msg %></div>
+</body>
+</html>
