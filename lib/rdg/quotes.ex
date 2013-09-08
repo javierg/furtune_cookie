@@ -2,22 +2,31 @@ defrecord :xmlElement, Record.extract(:xmlElement, from_lib: "xmerl/include/xmer
 defrecord XMLElement, element: nil
 
 defmodule Quotes do
+  @url "http://wertarbyte.de/gigaset-rss/?long=1&limit=140&cookies=20&lang=en&lang=es&format=rss&jar=off%2Flinux%2Coff%2Fmiscellaneous%2Coff%2Freligion%2Coff%2Friddles%2Coff%2Fsongs-poems%2Cparadoxum%2Cpeople%2Cpets%2Cpolitics%2Criddles%2Cscience%2Csongs-poems%2Cstartrek%2Cwisdom"
+
   def retrieve, do: messages |> Enum.first
 
   defp messages do
+    Enum.map parsed_content |> titles, &get_msg/1
+  end
+
+  defp get_msg node do
     rss_msg_node_index = 8
-    Enum.map parsed_content |> titles, fn(msg_node) ->
-      {_, _, _, _, msg, _} = Enum.first( elem msg_node, rss_msg_node_index )
-      msg
-    end
+    {_, _, _, _, msg, _} = Enum.first( elem node, rss_msg_node_index )
+    msg
   end
 
   defmacrop empty_node, do: [element: nil]
 
-  defp xml_doc do
+  defp request_doc do
     #TODO: Cache responses
     HTTPotion.start
-    HTTPotion.get("http://wertarbyte.de/gigaset-rss/?long=1&limit=140&cookies=20&lang=en&lang=es&format=rss&jar=off%2Flinux%2Coff%2Fmiscellaneous%2Coff%2Freligion%2Coff%2Friddles%2Coff%2Fsongs-poems%2Cparadoxum%2Cpeople%2Cpets%2Cpolitics%2Criddles%2Cscience%2Csongs-poems%2Cstartrek%2Cwisdom").body
+    HTTPotion.get(@url)
+  end
+
+  defp xml_doc do
+    {_, bite_str} = String.to_char_list( request_doc.body )
+    bite_str
   end
 
   defp from_element(element) do
@@ -36,8 +45,7 @@ defmodule Quotes do
   end
 
   defp parsed_content do
-    {_, str} = String.to_char_list(xml_doc)
-    {doc, []} = str |> :xmerl_scan.string([comments: false])
+    {doc, []} = xml_doc |> :xmerl_scan.string([comments: false])
     from_element(doc)
   end
 end
